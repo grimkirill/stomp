@@ -1,6 +1,6 @@
 {
     "name": "grimkirill/stomp",
-    "description": "Work queues using Stomp protocol. RabbitMQ, Apache ActiveMQ ",
+    "description": "Work queues using Stomp protocol v 1.1. RabbitMQ, Apache ActiveMQ ",
     "keywords": ["Stomp", "RabbitMQ", "Apache ActiveMQ", "ActiveMQ Apollo"],
     "homepage": "https://github.com/grimkirill/Stomp",
     "type": "library",
