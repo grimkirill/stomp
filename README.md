@@ -8,8 +8,8 @@ Usage
 <?php
 
 $client = new \Stomp\Client(array('tcp://127.0.0.1:61613'), array(
-        'login' => 'doluser',
-        'passcode' => 'lndf7y8INbT6H8rPTxR3',
+        'login' => 'admin',
+        'passcode' => 'password',
         'host' => '/',
         'queue_prefix' => '/queue/',
     ));
