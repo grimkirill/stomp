@@ -29,6 +29,10 @@ class Client
 
     protected $_queue_prefix = '';
 
+    /**
+     * @param string|array $uri
+     * @param array $params connections params
+     */
     public function __construct($uri = 'tcp://127.0.0.1:61613', $params = array())
     {
         $this->_connect_options = $params;
@@ -46,6 +50,10 @@ class Client
         $this->_safe = $value;
     }
 
+    /**
+     * Set prefix for queue name
+     * @param $prefix
+     */
     public function setQueuePrefix($prefix)
     {
         $this->_queue_prefix = $prefix;
