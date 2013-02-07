@@ -129,6 +129,13 @@ class Client
         return $this->_server_info['session'];
     }
 
+    /**
+     * Send new message
+     * @param $destination
+     * @param $message
+     * @param array $headers
+     * @return bool
+     */
     public function send($destination, $message, $headers = array())
     {
         $message = strval($message);
@@ -177,6 +184,12 @@ class Client
         return true;
     }
 
+    /**
+     * Subscribe
+     * @param $destination
+     * @param array $headers
+     * @return bool
+     */
     public function subscribe($destination, $headers = array())
     {
         $headers['destination'] = $this->_queue_prefix . $destination;
@@ -184,17 +197,25 @@ class Client
         $headers['ack'] = 'client';
         $frame = new Frame(Frame::COMMAND_SUBSCRIBE, '', $headers);
         $this->getConnection()->write($frame);
-        /*if ($this->getConnection()->canRead()) {
-            $read_frame = $this->getConnection()->read();
-            if ($read_frame->getCommand() == Frame::COMMAND_ERROR) {
-                $this->_throwStompException($read_frame);
-            }
-        }*/
         return true;
 
     }
 
     /**
+     * Unsubscribe
+     * @return bool
+     */
+    public function unsubscribe()
+    {
+        $headers['id'] = md5($this->getSession());
+        $headers['ack'] = 'client';
+        $frame = new Frame(Frame::COMMAND_UNSUBSCRIBE, '', $headers);
+        $this->getConnection()->write($frame);
+        return true;
+    }
+
+    /**
+     * Read next message
      * @return Message
      */
     public function readMessage($timeout = 0)
