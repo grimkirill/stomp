@@ -25,8 +25,6 @@ class Client
      */
     protected $_connection;
 
-    protected $_safe = true;
-
     protected $_queue_prefix = '';
 
     /**
@@ -43,11 +41,6 @@ class Client
             unset($params['queue_prefix']);
         }
 
-    }
-
-    public function setSafe($value)
-    {
-        $this->_safe = $value;
     }
 
     /**
@@ -134,24 +127,35 @@ class Client
      * @param $destination
      * @param $message
      * @param array $headers
+     * @param int $receipt receipt timeout
      * @return bool
      */
-    public function send($destination, $message, $headers = array())
+    public function send($destination, $message, $headers = array(), $receipt = false)
     {
         $message = strval($message);
 
         $headers['destination']  = $this->_queue_prefix . $destination;
         $headers['content-type'] = 'text/plain';
         $headers[Frame::CONTENT_LENGTH] = strlen($message);
+        if ($receipt) {
+            $headers['receipt'] = md5('receipt-' . $this->getSession());
+        }
 
         $send_frame = new Frame(Frame::COMMAND_SEND, $message, $headers);
         $this->getConnection()->write($send_frame);
 
-        if ($this->_safe && $this->getConnection()->canRead()) {
-            $read_frame = $this->getConnection()->read();
-            if ($read_frame->getCommand() == Frame::COMMAND_ERROR) {
-                $this->_throwStompException($read_frame);
+        if ($receipt) {
+            if ($read_frame = $this->getConnection()->read($receipt)) {
+                if ($read_frame->getCommand() == Frame::COMMAND_ERROR) {
+                    $this->_throwStompException($read_frame);
+                } elseif ($read_frame->getCommand() == Frame::COMMAND_RECEIPT) {
+                    $receipt_headers = $read_frame->getHeaders();
+                    if ($receipt_headers['receipt-id'] == $headers['receipt']) {
+                        return true;
+                    }
+                }
             }
+            return false;
         }
         return true;
     }
