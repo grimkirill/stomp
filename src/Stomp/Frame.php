@@ -122,7 +122,16 @@ class Frame
             $headers = array();
             foreach ($headers_raw AS $header_raw) {
                 if (preg_match("|([\w-]+):\s*(.+)|", $header_raw, $m)) {
-                    $headers[$m[1]] = $m[2];
+                    if (isset($headers[$m[1]])) {
+                        if (is_array($headers[$m[1]])) {
+                            $headers[$m[1]][] = $m[2];
+                        } else {
+                            $headers[$m[1]] = array($headers[$m[1]], $m[2]);
+                        }
+                    } else {
+                        $headers[$m[1]] = $m[2];
+                    }
+
                 }
             }
             return $headers;
