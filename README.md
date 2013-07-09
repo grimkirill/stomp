@@ -6,7 +6,9 @@ Usage
 
 ```php
 <?php
-
+/**
+ * Create connection
+ */
 $client = new \Stomp\Client(array('tcp://127.0.0.1:61613'), array(
         'login' => 'admin',
         'passcode' => 'password',
