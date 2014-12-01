@@ -11,7 +11,6 @@ namespace Stomp;
 
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\StompException;
-use Stomp\Frame;
 
 
 class Connection
@@ -36,13 +35,13 @@ class Connection
     /**
      * Connection to Stomp server
      * @param $uri
-     * @param array $options
+     * @param  array                         $options
      * @return bool
      * @throws Exception\ConnectionException
      */
     public function connect($uri, array $options = array())
     {
-        $uri = (array)$uri;
+        $uri = (array) $uri;
         $uri = array_values($uri);
 
         if (!isset($options['timeout_sec'])) {
@@ -70,8 +69,8 @@ class Connection
 
         $opts = array(
             'ssl' => array(
-                'ciphers' => 'RC4-SHA'
-            )
+                'ciphers' => 'RC4-SHA',
+            ),
         );
 
         $context = stream_context_create($opts);
@@ -96,11 +95,11 @@ class Connection
         $this->setTimeout();
         stream_set_blocking($this->_socket, 1);
 
-
         return true;
     }
 
-    public function setTimeout($sec = 0) {
+    public function setTimeout($sec = 0)
+    {
         if ($sec == 0) {
             $sec = $this->_options['timeout_sec'];
         }
@@ -112,7 +111,6 @@ class Connection
 
     public function close()
     {
-
     }
 
     /**
@@ -125,6 +123,7 @@ class Connection
         if (!is_resource($this->_socket)) {
             throw new Exception\ConnectionException('Not connected to Stomp server');
         }
+
         return true;
     }
 
@@ -141,7 +140,6 @@ class Connection
 
         return stream_select($read, $write, $except, 0, 10000) == 1;
     }
-
 
     /**
      * Check if the connection has timed out
@@ -164,7 +162,7 @@ class Connection
 
     /**
      * Write frame to connection
-     * @param Frame $frame
+     * @param  Frame                         $frame
      * @return bool
      * @throws Exception\ConnectionException
      */
@@ -195,13 +193,13 @@ class Connection
                 $message = $headers['message'];
             } else {
                 $message = $frame->getCommand();
-                foreach ($headers->getHeaders() AS $key => $value) {
-                    $message .= ' ' . $key . ' ' . $value . ';';
+                foreach ($headers->getHeaders() as $key => $value) {
+                    $message .= ' '.$key.' '.$value.';';
                 }
             }
 
             if ($frame->getBody()) {
-                $message .= ' ' . $frame->getBody();
+                $message .= ' '.$frame->getBody();
             }
 
             throw new StompException($message);
@@ -227,7 +225,9 @@ class Connection
         // read command and headers
         while (($line = @fgets($this->_socket)) !== false) {
             $headers_rows[] = $line;
-            if (rtrim($line) === '') break;
+            if (rtrim($line) === '') {
+                break;
+            }
         }
 
         if (count($headers_rows) > 0) {
@@ -242,7 +242,7 @@ class Connection
                 // read till we hit the end of frame marker
                 do {
                     $chunk = @fgets($this->_socket);
-                    if ( $chunk === false || strlen($chunk) === 0) {
+                    if ($chunk === false || strlen($chunk) === 0) {
                         $this->_checkSocketReadTimeout();
                         break;
                     }
@@ -277,11 +277,8 @@ class Connection
             }
 
             return new Frame($command, substr($response, 0, -2), $headers);
-
         } else {
             return false;
         }
-
     }
-
 }

@@ -14,7 +14,6 @@ use Stomp\Exception\ConnectionException;
 
 class Client
 {
-
     protected $_connect_options;
     protected $_connect_uri;
 
@@ -29,18 +28,17 @@ class Client
 
     /**
      * @param string|array $uri
-     * @param array $params connections params
+     * @param array        $params connections params
      */
     public function __construct($uri = 'tcp://127.0.0.1:61613', $params = array())
     {
         $this->_connect_options = $params;
-        $this->_connect_uri = (array)$uri;
+        $this->_connect_uri = (array) $uri;
 
         if (isset($params['queue_prefix'])) {
             $this->_queue_prefix = $params['queue_prefix'];
             unset($params['queue_prefix']);
         }
-
     }
 
     /**
@@ -66,7 +64,6 @@ class Client
         return $this->_connection;
     }
 
-
     protected function _connect()
     {
         $connect_params = array(
@@ -75,7 +72,7 @@ class Client
         );
         $accepted_headers = array('host', 'login', 'passcode');
 
-        foreach ($accepted_headers AS $header) {
+        foreach ($accepted_headers as $header) {
             if (isset($this->_connect_options[$header])) {
                 $connect_params[$header] = $this->_connect_options[$header];
             }
@@ -97,28 +94,39 @@ class Client
             $message = $headers['message'];
         } else {
             $message = $frame->getCommand();
-            foreach ($headers->getHeaders() AS $key => $value) {
-                $message .= ' ' . $key . ' ' . $value . ';';
+            foreach ($headers->getHeaders() as $key => $value) {
+                $message .= ' '.$key.' '.$value.';';
             }
         }
 
         if ($frame->getBody()) {
-            $message .= ' ' . $frame->getBody();
+            $message .= ' '.$frame->getBody();
         }
 
         throw new StompException($message);
     }
 
-
+    /**
+     * Return server and connection info
+     *
+     * @return array
+     */
     public function getServerInfo()
     {
         $this->getConnection();
+
         return $this->_server_info;
     }
 
+    /**
+     * Return connection session
+     *
+     * @return string
+     */
     public function getSession()
     {
         $this->getConnection();
+
         return $this->_server_info['session'];
     }
 
@@ -126,19 +134,19 @@ class Client
      * Send new message
      * @param $destination
      * @param $message
-     * @param array $headers
-     * @param int $receipt receipt timeout
+     * @param  array $headers
+     * @param  bool  $receipt
      * @return bool
      */
     public function send($destination, $message, $headers = array(), $receipt = false)
     {
         $message = strval($message);
 
-        $headers['destination']  = $this->_queue_prefix . $destination;
+        $headers['destination']  = $this->_queue_prefix.$destination;
         $headers['content-type'] = 'text/plain';
         $headers[Frame::CONTENT_LENGTH] = strlen($message);
         if ($receipt) {
-            $headers['receipt'] = md5('receipt-' . $this->getSession());
+            $headers['receipt'] = md5('receipt-'.$this->getSession());
         }
 
         $send_frame = new Frame(Frame::COMMAND_SEND, $message, $headers);
@@ -155,21 +163,35 @@ class Client
                     }
                 }
             }
+
             return false;
         }
+
         return true;
     }
 
+    /**
+     * @param string $transaction
+     * @return bool
+     */
     public function transactionBegin($transaction)
     {
         return $this->_transaction(Frame::COMMAND_BEGIN, $transaction);
     }
 
+    /**
+     * @param string $transaction
+     * @return bool
+     */
     public function transactionCommit($transaction)
     {
         return $this->_transaction(Frame::COMMAND_COMMIT, $transaction);
     }
 
+    /**
+     * @param string $transaction
+     * @return bool
+     */
     public function transactionAbort($transaction)
     {
         return $this->_transaction(Frame::COMMAND_ABORT, $transaction);
@@ -185,24 +207,25 @@ class Client
                 $this->_throwStompException($read_frame);
             }
         }
+
         return true;
     }
 
     /**
      * Subscribe
      * @param $destination
-     * @param array $headers
+     * @param  array $headers
      * @return bool
      */
     public function subscribe($destination, $headers = array())
     {
-        $headers['destination'] = $this->_queue_prefix . $destination;
+        $headers['destination'] = $this->_queue_prefix.$destination;
         $headers['id'] = md5($this->getSession());
         $headers['ack'] = 'client';
         $frame = new Frame(Frame::COMMAND_SUBSCRIBE, '', $headers);
         $this->getConnection()->write($frame);
-        return true;
 
+        return true;
     }
 
     /**
@@ -215,6 +238,7 @@ class Client
         $headers['ack'] = 'client';
         $frame = new Frame(Frame::COMMAND_UNSUBSCRIBE, '', $headers);
         $this->getConnection()->write($frame);
+
         return true;
     }
 
@@ -226,7 +250,8 @@ class Client
     {
         if ($frame = $this->getConnection()->readFrame($timeout)) {
             return new Message($this->getConnection(), $frame);
+        } else {
+            return null;
         }
     }
-
 }

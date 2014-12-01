@@ -69,10 +69,9 @@ class Frame
         return $this->_body;
     }
 
-
     public function setHeaders($headers)
     {
-        $this->_headers = (array)$headers;
+        $this->_headers = (array) $headers;
     }
 
     public function addHeader($header, $value)
@@ -92,15 +91,14 @@ class Frame
         $this->setBody($body);
     }
 
-
     public function getFrame()
     {
         // Command
-        $frame = $this->getCommand() . self::EOL;
+        $frame = $this->getCommand().self::EOL;
 
         // Headers
-        foreach ($this->getHeaders() AS $key => $value) {
-            $frame .= $key . ':' . $value . self::EOL;
+        foreach ($this->getHeaders() as $key => $value) {
+            $frame .= $key.':'.$value.self::EOL;
         }
 
         // Seperator blank line required by protocol
@@ -112,15 +110,15 @@ class Frame
         }
 
         $frame .= self::END_OF_FRAME;
+
         return $frame;
     }
-
 
     public static function extractHeaders($headers_raw)
     {
         if (is_array($headers_raw) && count($headers_raw)) {
             $headers = array();
-            foreach ($headers_raw AS $header_raw) {
+            foreach ($headers_raw as $header_raw) {
                 if (preg_match("|([\w-]+):\s*(.+)|", $header_raw, $m)) {
                     if (isset($headers[$m[1]])) {
                         if (is_array($headers[$m[1]])) {
@@ -131,14 +129,12 @@ class Frame
                     } else {
                         $headers[$m[1]] = $m[2];
                     }
-
                 }
             }
+
             return $headers;
         } else {
             return array();
         }
     }
-
-
 }

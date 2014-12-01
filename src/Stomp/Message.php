@@ -9,8 +9,6 @@
 
 namespace Stomp;
 
-use Stomp\Connection;
-use Stomp\Frame;
 
 class Message
 {
@@ -50,6 +48,7 @@ class Message
             'subscription' => $headers['subscription'],
             'message-id'   => $headers['message-id'],
         ));
+
         return $this->_connection->write($frame);
     }
 }
