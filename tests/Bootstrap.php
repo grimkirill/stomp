@@ -1,10 +1,12 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: kirill
- * Date: 10.01.13
- * Time: 16:44
- * To change this template use File | Settings | File Templates.
+
+/*
+ * This file is part of the Stomp package.
+ *
+ * (c) Kirill Skatov <kirill@noadmin.ru>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 spl_autoload_register(function ($class) {

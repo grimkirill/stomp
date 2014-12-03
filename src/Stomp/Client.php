@@ -1,10 +1,12 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: kirill
- * Date: 11.01.13
- * Time: 10:48
- * To change this template use File | Settings | File Templates.
+
+/*
+ * This file is part of the Stomp package.
+ *
+ * (c) Kirill Skatov <kirill@noadmin.ru>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Stomp;
@@ -67,7 +69,7 @@ class Client
     protected function _connect()
     {
         $connect_params = array(
-            'accept-version' => '1.1',
+            'accept-version' => '1.0,1.1,1.2',
             'heart-beat'     => '0,0',
         );
         $accepted_headers = array('host', 'login', 'passcode');
@@ -215,13 +217,22 @@ class Client
      * Subscribe
      * @param $destination
      * @param  array $headers
+     * @param bool $ack
+     * @param null|string $id
+     * @throws ConnectionException
      * @return bool
      */
-    public function subscribe($destination, $headers = array())
+    public function subscribe($destination, $headers = array(), $ack = true, $id = null)
     {
-        $headers['destination'] = $this->_queue_prefix.$destination;
-        $headers['id'] = md5($this->getSession());
-        $headers['ack'] = 'client';
+        $defaultHeaders = array(
+            'destination' => $this->_queue_prefix . $destination,
+            'id' => $id ? strval($id) : md5($this->getSession())
+        );
+        if ($ack) {
+            $defaultHeaders['ack'] = 'client';
+        }
+
+        $headers = array_merge($defaultHeaders, $headers);
         $frame = new Frame(Frame::COMMAND_SUBSCRIBE, '', $headers);
         $this->getConnection()->write($frame);
 
@@ -230,12 +241,13 @@ class Client
 
     /**
      * Unsubscribe
+     * @param null $id
+     * @throws ConnectionException
      * @return bool
      */
-    public function unsubscribe()
+    public function unsubscribe($id = null)
     {
-        $headers['id'] = md5($this->getSession());
-        $headers['ack'] = 'client';
+        $headers['id'] = $id ? strval($id) : md5($this->getSession());
         $frame = new Frame(Frame::COMMAND_UNSUBSCRIBE, '', $headers);
         $this->getConnection()->write($frame);
 

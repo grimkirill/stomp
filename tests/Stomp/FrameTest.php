@@ -1,10 +1,12 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: kirill
- * Date: 10.01.13
- * Time: 18:09
- * @Version
+
+/*
+ * This file is part of the Stomp package.
+ *
+ * (c) Kirill Skatov <kirill@noadmin.ru>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace StompTest;
