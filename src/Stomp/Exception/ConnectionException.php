@@ -11,6 +11,6 @@
 
 namespace Stomp\Exception;
 
-class ConnectionException extends \Exception
+class ConnectionException extends StompException
 {
 }

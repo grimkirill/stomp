@@ -11,6 +11,6 @@
 
 namespace Stomp\Exception;
 
-class StompException extends \Exception
+class StompException extends \RuntimeException
 {
 }
