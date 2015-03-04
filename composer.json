@@ -1,6 +1,6 @@
 {
     "name": "grimkirill/stomp",
-    "description": "Work queues using Stomp protocol v 1.1. RabbitMQ, Apache ActiveMQ ",
+    "description": "Pure PHP Stomp client. Support protocol v 1.0, 1.1, 1.2. RabbitMQ, Apache ActiveMQ",
     "keywords": ["Stomp", "RabbitMQ", "Apache ActiveMQ", "ActiveMQ Apollo"],
     "homepage": "https://github.com/grimkirill/Stomp",
     "type": "library",
