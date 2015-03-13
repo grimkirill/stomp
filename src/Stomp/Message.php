@@ -46,10 +46,16 @@ class Message
     protected function _response($action)
     {
         $headers = $this->getHeaders();
-        $frame = new Frame($action, '', array(
+
+        $frameHeaders = array(
             'subscription' => $headers['subscription'],
-            'message-id'   => $headers['message-id'],
-        ));
+            'message-id'   => $headers['message-id']
+        );
+        if (array_key_exists('ack', $headers)) {
+            $frameHeaders['id'] = $headers['ack'];
+        }
+
+        $frame = new Frame($action, '', $frameHeaders);
 
         return $this->_connection->write($frame);
     }

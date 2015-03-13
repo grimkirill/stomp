@@ -229,7 +229,7 @@ class Client
             'id' => $id ? strval($id) : md5($this->getSession())
         );
         if ($ack) {
-            $defaultHeaders['ack'] = 'client';
+            $defaultHeaders['ack'] = 'client-individual';
         }
 
         $headers = array_merge($defaultHeaders, $headers);
